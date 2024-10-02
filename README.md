@@ -49,7 +49,6 @@ As a new AWS customer, you are automatically enrolled in the Free Tier, which in
     - Download the CSV file containing your **AWS Access Key ID** and **Secret Access Key**.
 
 
-
 ## <a id="installing-dependencies">Installing Dependencies</a>
 
 To set up the required dependencies for this tool, follow these steps:
