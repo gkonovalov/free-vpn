@@ -1,4 +1,4 @@
-# Free VPN Management Tool
+# Free VPN
 
 Free VPN: A management tool for simplifying VPN server setup and management on `AWS` using `Terraform` and `AWS CLI`. It simplifies creating, listing, and destroying VPN servers, leveraging AWS Free Tier to minimize costs. Additionally, it supports `multi-region deployments` and offers `DPI (Deep Packet Inspection) bypass` to ensure reliable VPN access in restrictive network environments.
 
