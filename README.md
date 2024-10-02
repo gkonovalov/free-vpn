@@ -39,14 +39,15 @@ As a new AWS customer, you are automatically enrolled in the Free Tier, which in
     - After 12 months, you will be billed at standard rates if you exceed free tier usage.
    
 3. **Get Your AWS Access Key**:
-    - Log in to the AWS Console.
+    - Log in to the **AWS Console**.
     - Navigate to **IAM (Identity and Access Management)**:
-        - Click on **Services** > **IAM**.
-    - Under **Users**, click **Add User**.
-    - Enter a username (e.g., `vpnuser`), check the box for **Programmatic Access**, and click **Next**.
-    - **Attach Existing Policies**: 
-        - Select the policies that provide necessary permissions (e.g., `AmazonEC2FullAccess` for EC2 management).
-    - Review and create the user, then download the CSV file containing your **AWS Access Key ID** and **Secret Access Key**.
+      - Click on **Users** → **Create User**.
+    - Enter a username (e.g., `vpnuser`), and check the box for **Attach policies directly**:
+      - Select the necessary policies (e.g., `AdministratorAccess` for EC2 management).
+    - Click on `vpnuser` in the user table → **Security Credentials**:
+      - Click on **Access Keys** → **Create access key**.
+    - Download the CSV file containing your **AWS Access Key ID** and **Secret Access Key**.
+
 
 
 ## <a id="installing-dependencies">Installing Dependencies</a>
