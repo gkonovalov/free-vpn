@@ -35,8 +35,8 @@ As a new AWS customer, you are automatically enrolled in the Free Tier, which in
    
 2. **Select an EC2 Plan**:
     - Choose the AWS Free Tier, which allows new AWS customers to use certain services free for 12 months.
-    - Be aware of the limits (750 hours of t2.micro usage per month, 15 GB of outbound bandwidth, etc.).
-    - After 12 months, you will be billed at standard rates if you exceed free tier usage.
+    - Be aware of the limits (**750 hours** of **t2.micro** usage per month, 100 GB of outbound bandwidth, etc.).
+    - After **12 months**, you will be billed at standard rates if you exceed free tier usage.
    
 3. **Get Your AWS Access Key**:
     - Log in to the **AWS Console**.
