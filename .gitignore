@@ -44,7 +44,8 @@ terraform.rc
 /server/
 /client/
 /terraform/variables
-/idea/*
+/.idea/*
+free-vpn.iml
 /out/*
 *.iml
 .DS_Store
