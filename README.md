@@ -104,7 +104,7 @@ To create a new VPN server, run the Python script:
 
 3. **Obtain OpenVPN client configuration**:
 
-    After running the `vpn.py` script, the following OpenVPN client configuration and certificates will be available in the region-specific directory (e.g., `state/us-east-1/`) the `openvpn` folder:
+    After running the `vpn.py` script, the following OpenVPN client configuration and certificates will be available in the local region-specific directory (e.g., `state/us-east-1/openvpn`):
 
     - `ca.crt`: Certificate authority file.
     - `client.ovpn`: OpenVPN configuration file.
