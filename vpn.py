@@ -139,7 +139,7 @@ def region_selection(get_regions, action):
 
 def parameters_selection(region):
     instance_name = pinput("Enter instance name", "open-vpn-server")
-    instance_type = pinput("Enter instance type", "t3.micro")
+    instance_type = pinput("Enter instance type", "t2.micro")
     openvpn_dpi_bypass = pinput("Use OpenVPN DPI bypass (yes|no)", "yes")
     openvpn_port = 443
     openvpn_protocol = 'tcp'
