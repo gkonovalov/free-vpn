@@ -24,51 +24,50 @@ To utilize this tool effectively, you will need the following:
 
 ## <a id="installing-dependencies">Installing Dependencies</a>
 
-To set up the required dependencies for this tool, follow these steps:
+Follow these steps to set up the required dependencies for this tool:
 
 1. **Install Python**:
 
-   You can install Python using [Homebrew](https://brew.sh/) on macOS. Open your terminal and run:
+   To install Python on macOS, use [Homebrew](https://brew.sh/). Open your terminal and run:
 
     ```bash
     brew install python
     ```
 
-   For more information and installation methods on different operating systems, you can refer to the [official Python installation guide](https://www.python.org/downloads/).
+   For additional installation methods across different operating systems, refer to the [official Python installation guide](https://www.python.org/downloads/).
 
 2. **Install Terraform CLI**:
 
-   You can install Terraform using [Homebrew](https://brew.sh/) on macOS. Open your terminal and run the following commands:
+   To install Terraform on macOS, use Homebrew. Execute the following commands in your terminal:
 
     ```bash
     brew tap hashicorp/tap
     brew install hashicorp/tap/terraform
     ```
-   
-   For more information and installation methods on different operating systems, you can refer to the [official Terraform installation guide](https://developer.hashicorp.com/terraform/install).
+
+   For further details and installation instructions for other platforms, consult the [official Terraform installation guide](https://developer.hashicorp.com/terraform/install).
 
 3. **Install Ansible**:
 
-   To install Ansible on macOS, you can use the package manager Homebrew. Run the following command in your terminal:
+   Install Ansible on macOS using Homebrew by running:
 
     ```bash
     brew install ansible
     ```
 
-   For more information and installation methods on different operating systems, you can refer to the [official Ansible installation guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
-
+   For comprehensive installation methods on various operating systems, check the [official Ansible installation guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 
 4. **Install AWS CLI**:
 
-   To install AWS CLI on macOS, you can use the package manager Homebrew. Run the following command in your terminal:
+   To install AWS CLI on macOS, use Homebrew with the following command:
 
     ```bash
     brew install awscli
     ```
 
-   For more information and installation methods on different operating systems, you can refer to the [official AWS CLI installation guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+   For additional information and installation methods on different platforms, refer to the [official AWS CLI installation guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-   Ensure you have configured the AWS CLI with your AWS access keys. You will be prompted for your `Access Key ID`, `Secret Access Key`, default region name, and output format:
+   After installation, configure the AWS CLI with your access keys. You will be prompted to enter your `Access Key ID`, `Secret Access Key`, default region name, and output format:
 
     ```bash
     aws configure
@@ -78,15 +77,15 @@ To set up the required dependencies for this tool, follow these steps:
 
 To create a new VPN server, run the Python script:
 
-1. **Run Python Script**:
+1. **Run the Python Script**:
 
     ```bash
     python vpn.py
     ```
 
-    When you run the `vpn.py` script, you will be prompted to choose one of the following actions:
+    When you run `vpn.py`, you will be prompted to choose one of the following actions:
 
-    - `create`: Set up a new VPN server or update existing.
+    - `create`: Set up a new VPN server or update an existing one.
     - `destroy`: Remove an existing VPN server.
     - `list`: View all active VPN servers.
 
@@ -97,8 +96,7 @@ To create a new VPN server, run the Python script:
 
     - `aws_region`: Specify the AWS region where the VPN server will be deployed (e.g., `us-east-1`).
     - `instance_name`: Set a unique name for your VPN instance (e.g., `open-vpn-server`).
-    - `instance_type`: Choose the type of AWS instance (e.g., `t2.micro`).
-    - `ssh_username`: Define the username for SSH access to the instance (e.g., `admin`).
+    - `instance_type`: Choose the type of AWS instance (e.g., `t3.micro`).
     - `openvpn_port`: Set the port number for OpenVPN (default is usually `1194`).
     - `openvpn_protocol`: Specify the protocol used by OpenVPN (e.g., `udp` or `tcp`).
     - `openvpn_dpi_bypass`: Configure DPI bypass for OpenVPN by setting this parameter to `yes` for enabled or `no` for disabled.

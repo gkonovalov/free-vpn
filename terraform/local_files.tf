@@ -14,6 +14,7 @@ resource "local_file" "update_json" {
   content  = jsonencode(merge(jsondecode(file(local.state_file)), {
     server_ip = aws_eip.external_ip.public_ip
     ssh_port = var.ssh_port
+    ssh_username = var.ssh_username
     ssh_key_name = var.ssh_key_name
   }))
 }

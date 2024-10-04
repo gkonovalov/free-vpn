@@ -55,7 +55,7 @@ REGION_TO_CITY = {
 def main():
     print("Welcome to the Free VPN management tool!")
     print("You can choose one of the following actions:")
-    print("  'deploy'  : Set up a new VPN server or update existing")
+    print("  'deploy'  : Set up a new VPN server or update an existing one")
     print("  'destroy' : Remove an existing VPN server.")
     print("  'list'    : View all active VPN servers.")
 
@@ -63,7 +63,7 @@ def main():
 
     if action == "deploy":
         print("Available AWS Regions:")
-        region_selection(get_available_regions, deploy_vpn_resources, True)
+        region_selection(get_available_regions, deploy_vpn_resources)
     elif action == "destroy":
         print("Existing VPN servers in AWS Regions:")
         region_selection(get_existing_regions, destroy_vpn_resources)
@@ -114,7 +114,7 @@ def ansible_configuration_update(region):
     subprocess.run(['ansible-playbook', ansible, '--extra-vars', config])
 
 
-def region_selection(get_regions, action, single=False):
+def region_selection(get_regions, action):
     regions = get_regions()
 
     if not regions:
@@ -123,7 +123,7 @@ def region_selection(get_regions, action, single=False):
 
     print_city_regions(regions)
 
-    selected_regions_input = pinput("Enter region", "us-east-1" if single else "all")
+    selected_regions_input = pinput("Enter one or more region names separated by spaces", "us-east-1")
 
     if selected_regions_input.lower() == "all":
         selected_regions = regions
@@ -133,17 +133,13 @@ def region_selection(get_regions, action, single=False):
     for region in selected_regions:
         if region in regions:
             action(region)
-
-            if single:
-                break
         else:
             print(f"Skipping invalid region: {region}")
 
 
 def parameters_selection(region):
     instance_name = pinput("Enter instance name", "open-vpn-server")
-    instance_type = pinput("Enter instance type", "t2.micro")
-    ssh_username = pinput("Enter SSH username", "admin")
+    instance_type = pinput("Enter instance type", "t3.micro")
     openvpn_dpi_bypass = pinput("Use OpenVPN DPI bypass (yes|no)", "yes")
     openvpn_port = 443
     openvpn_protocol = 'tcp'
@@ -156,7 +152,6 @@ def parameters_selection(region):
         "aws_region": region,
         "instance_name": instance_name,
         "instance_type": instance_type,
-        "ssh_username": ssh_username,
         "openvpn_port": openvpn_port,
         "openvpn_protocol": openvpn_protocol,
         "openvpn_dpi_bypass": openvpn_dpi_bypass == "yes"

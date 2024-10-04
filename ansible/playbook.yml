@@ -23,7 +23,7 @@
 - name: Set up OpenVPN
   hosts: servers
   become: yes
-  gather_facts: yes
+  gather_facts: no
   tasks:
     - name: Update system locale
       command: localectl set-locale LANG=en_US.UTF-8
