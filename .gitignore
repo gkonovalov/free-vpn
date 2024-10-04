@@ -41,11 +41,8 @@ terraform.rc
 /terraform/.terraform.tfstate.lock.info
 /terraform/.terraform.lock.hcl
 /terraform/.terraform
-/server/
-/client/
-/terraform/variables
+/state/
 /.idea/*
-free-vpn.iml
 /out/*
 *.iml
 .DS_Store

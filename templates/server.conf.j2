@@ -29,10 +29,10 @@
 # on the same machine, use a different port
 # number for each one.  You will need to
 # open up this port on your firewall.
-port ${port}
+port {{ openvpn_port }}
 
 # TCP or UDP server?
-proto ${protocol}
+proto {{ openvpn_protocol }}
 
 # "dev tun" will create a routed IP tunnel,
 # "dev tap" will create an ethernet tunnel.
@@ -153,6 +153,7 @@ server 10.8.0.0 255.255.255.0
 # First, uncomment out these lines:
 ;client-config-dir ccd
 ;route 192.168.40.128 255.255.255.248
+
 # Then create a file ccd/Thelonious with this line:
 #   iroute 192.168.40.128 255.255.255.248
 # This will allow Thelonious' private subnet to
@@ -165,6 +166,7 @@ server 10.8.0.0 255.255.255.0
 # First uncomment out these lines:
 ;client-config-dir ccd
 ;route 10.9.0.0 255.255.255.252
+
 # Then add this line to ccd/Thelonious:
 #   ifconfig-push 10.9.0.1 10.9.0.2
 
@@ -240,7 +242,9 @@ keepalive 10 120
 # a copy of this key.
 # The second parameter should be '0'
 # on the server and '1' on the clients.
-${openvpn_dpi_bypass}tls-crypt ta.key 0
+{% if openvpn_dpi_bypass %}
+tls-crypt ta.key 0
+{% endif %}
 
 # Select a cryptographic cipher.
 # This config item must be copied to

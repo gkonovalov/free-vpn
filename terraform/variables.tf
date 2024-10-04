@@ -11,6 +11,12 @@ variable "instance_name" {
   default     = "OpenVPN-Server"
 }
 
+variable "server_ip" {
+  description = "Public IP of the EC2 instance"
+  type        = string
+  default     = "127.0.0.1"
+}
+
 variable "ssh_port" {
   description = "The SSH port"
   type        = number
@@ -26,13 +32,13 @@ variable "ssh_username" {
 variable "ssh_key_name" {
   description = "Name of the SSH key pair"
   type        = string
-  default     = "open_vpn_server_key.pem"
+  default     = "ssh_key.pem"
 }
 
 variable "openvpn_dpi_bypass" {
   description = "DPI bypass for OpenVPN (default # - disabled)"
-  type        = string
-  default     = "#"
+  type        = bool
+  default     = true
 }
 
 variable "openvpn_port" {

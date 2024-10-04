@@ -33,12 +33,12 @@ dev tun
 # Are we connecting to a TCP or
 # UDP server?  Use the same setting as
 # on the server.
-proto ${protocol}
+proto {{ openvpn_protocol }}
 
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-remote ${public_ip} ${port}
+remote {{ server_ip }} {{ openvpn_port }}
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -103,7 +103,9 @@ remote-cert-tls server
 
 # If a tls-auth key is used on the server
 # then every client must also have the key.
-${openvpn_dpi_bypass}tls-crypt ta.key 1
+{% if openvpn_dpi_bypass %}
+tls-crypt ta.key 1
+{% endif %}
 
 # Select a cryptographic cipher.
 # If the cipher option is used on the server

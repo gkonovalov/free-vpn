@@ -1,0 +1,223 @@
+---
+- name: Add hosts dynamically
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH to become available
+      wait_for:
+        host: "{{ server_ip }}"
+        port: "{{ ssh_port }}"
+        state: started
+        timeout: 600
+        delay: 5
+
+    - name: Add a new host
+      ansible.builtin.add_host:
+        name: "{{ instance_name }}"
+        ansible_user: "{{ ssh_username }}"
+        ansible_host: "{{ server_ip }}"
+        ansible_ssh_private_key_file: "state/{{ aws_region }}/{{ ssh_key_name }}"
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=accept-new'
+        groups: servers
+
+- name: Set up OpenVPN
+  hosts: servers
+  become: yes
+  gather_facts: yes
+  tasks:
+    - name: Update system locale
+      command: localectl set-locale LANG=en_US.UTF-8
+
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Configure iptables-persistent for IPv4
+      debconf:
+        name: iptables-persistent
+        question: iptables-persistent/autosave_v4
+        value: true
+        vtype: boolean
+
+    - name: Configure iptables-persistent for IPv6
+      debconf:
+        name: iptables-persistent
+        question: iptables-persistent/autosave_v6
+        value: true
+        vtype: boolean
+
+    - name: Install openvpn udev easy-rsa dnsmasq iptables-persistent packages
+      apt:
+        name:
+          - openvpn
+          - udev
+          - easy-rsa
+          - dnsmasq
+          - iptables-persistent
+        state: present
+
+    - name: Create OpenVPN CA directory
+      file:
+        path: /home/{{ ssh_username }}/easy-rsa/
+        state: directory
+
+    - name: Copy Easy-RSA files
+      copy:
+        src: /usr/share/easy-rsa/
+        dest: /home/{{ ssh_username }}/easy-rsa/
+        remote_src: yes
+
+    - name: Initialize PKI
+      command: ./easyrsa init-pki
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+      environment:
+        EASYRSA_BATCH: "yes"
+
+    - name: Build CA
+      command: ./easyrsa build-ca nopass
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+      environment:
+        EASYRSA_BATCH: "yes"
+
+    - name: Generate server certificate
+      command: ./easyrsa gen-req server nopass
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+      environment:
+        EASYRSA_BATCH: "yes"
+
+    - name: Sign server certificate
+      command: ./easyrsa sign-req server server
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+      environment:
+        EASYRSA_BATCH: "yes"
+
+    - name: Generate Diffie-Hellman
+      command: ./easyrsa gen-dh
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+
+    - name: Generate client certificate
+      command: ./easyrsa gen-req client1 nopass
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+      environment:
+        EASYRSA_BATCH: "yes"
+
+    - name: Sign client certificate
+      command: ./easyrsa sign-req client client1
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+      environment:
+        EASYRSA_BATCH: "yes"
+
+    - name: Move certificates and keys to OpenVPN server directory
+      command: cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem /etc/openvpn/
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+
+    - name: Create client certificates directory
+      file:
+        path: /home/{{ ssh_username }}/client_certs
+        state: directory
+
+    - name: Generate TLS-Auth key
+      command: openvpn --genkey secret /etc/openvpn/ta.key
+      when: openvpn_dpi_bypass
+
+    - name: Move client certificates and keys to OpenVPN client directory
+      command: cp pki/ca.crt pki/issued/client1.crt pki/private/client1.key ../client_certs
+      args:
+        chdir: /home/{{ ssh_username }}/easy-rsa/
+
+    - name: Set read permissions for client certs
+      file:
+        path: /home/{{ ssh_username }}/client_certs/
+        mode: '0644'
+
+    - name: Remove OpenVPN CA and PKI directories
+      file:
+        path: /home/{{ ssh_username }}/easy-rsa/
+        state: absent
+
+    - name: Copy OpenVPN server configuration to /etc/openvpn/
+      template:
+        src: ../templates/server.conf.j2
+        dest: /etc/openvpn/server.conf
+
+    - name: Enable IP forwarding
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: 'net.ipv4.ip_forward = 1'
+
+    - name: Apply sysctl settings
+      command: sysctl -p
+
+    - name: Configure firewall rules
+      block:
+        - command: iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+        - command: iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+        - command: iptables -A FORWARD -s 10.8.0.0/24 -j ACCEPT
+        - command: iptables -A FORWARD -j REJECT
+
+    - name: Save iptables rules
+      command: netfilter-persistent save
+
+    - name: Add DNS server configuration for DnsMasq
+      lineinfile:
+        path: /etc/dnsmasq.conf
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "listen-address=127.0.0.1,10.8.0.1"
+        - "interface=tun0"
+
+    - name: Create a OpenVPN client directory on local machine
+      file:
+        path: ../state/{{ aws_region }}/openvpn/
+        state: directory
+      become: no
+      delegate_to: localhost
+
+    - name: Copy OpenVPN client configuration to local machine
+      template:
+        src: ../templates/client.ovpn.j2
+        dest: ../state/{{ aws_region }}/openvpn/client.ovpn
+      become: no
+      delegate_to: localhost
+
+    - name: Fetching client certificates and key
+      fetch:
+        src: "/home/{{ ssh_username }}/client_certs/{{ item }}"
+        dest: ../state/{{ aws_region }}/openvpn/
+        flat: yes
+      loop:
+        - ca.crt
+        - client1.crt
+        - client1.key
+
+    - name: Fetching TLS-Auth key
+      fetch:
+        src: /etc/openvpn/ta.key
+        dest: ../state/{{ aws_region }}/openvpn/
+        flat: yes
+      when: openvpn_dpi_bypass
+
+    - name: Remove server folder for client certificates
+      file:
+        path: /home/{{ ssh_username }}/client_certs/
+        state: absent
+
+    - name: Restart OpenVPN service
+      systemd:
+        name: openvpn@server
+        state: restarted
+
+    - name: Restart DnsMasq service
+      systemd:
+        name: dnsmasq
+        state: restarted
