@@ -102,7 +102,7 @@ To create a new VPN server, run the Python script:
     - `openvpn_dpi_bypass`: Configure DPI bypass for OpenVPN by setting this parameter to `yes` for enabled or `no` for disabled.
 
 
-3. **Obtaining OpenVPN client configuration**:
+3. **Obtain OpenVPN client configuration**:
 
     After running the `vpn.py` script, the following OpenVPN client configuration and certificates will be available in the region-specific directory (e.g., `state/us-east-1/`) the `openvpn` folder:
 
