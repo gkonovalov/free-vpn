@@ -159,7 +159,7 @@
 
     - name: Configure firewall rules
       block:
-        - command: iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+        - command: iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o ens5 -j MASQUERADE
         - command: iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
         - command: iptables -A FORWARD -s 10.8.0.0/24 -j ACCEPT
         - command: iptables -A FORWARD -j REJECT

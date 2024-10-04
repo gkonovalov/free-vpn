@@ -96,7 +96,7 @@ To create a new VPN server, run the Python script:
 
     - `aws_region`: Specify the AWS region where the VPN server will be deployed (e.g., `us-east-1`).
     - `instance_name`: Set a unique name for your VPN instance (e.g., `open-vpn-server`).
-    - `instance_type`: Choose the type of AWS instance (e.g., `t2.micro`).
+    - `instance_type`: Choose the type of AWS instance (e.g., `t3.micro`).
     - `openvpn_port`: Set the port number for OpenVPN (default is usually `1194`).
     - `openvpn_protocol`: Specify the protocol used by OpenVPN (e.g., `udp` or `tcp`).
     - `openvpn_dpi_bypass`: Configure DPI bypass for OpenVPN by setting this parameter to `yes` for enabled or `no` for disabled.
