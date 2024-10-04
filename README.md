@@ -18,7 +18,7 @@ To utilize this tool effectively, you will need the following:
 
 - **AWS Account**: An active AWS account with access to the [Free Tier](https://aws.amazon.com/free/).
 - **Python (v. 3.x or higher)**.
-- **Terraform CLI (v. 1.2 or higher)**.
+- **Terraform (v. 1.2 or higher)**.
 - **Ansible (v. 2.17 or higher)**.
 - **AWS CLI (v. 2.17 or higher)**.
 
@@ -36,7 +36,7 @@ Follow these steps to set up the required dependencies for this tool:
 
    For additional installation methods across different operating systems, refer to the [official Python installation guide](https://www.python.org/downloads/).
 
-2. **Install Terraform CLI**:
+2. **Install Terraform**:
 
    To install Terraform on macOS, use Homebrew. Execute the following commands in your terminal:
 
