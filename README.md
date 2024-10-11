@@ -3,15 +3,15 @@
 Free VPN - tool for simplifying VPN server setup and management on `AWS` using `Terraform`, `Ansible` and `AWS CLI`. It simplifies creating, listing, and destroying VPN servers, leveraging AWS Free Tier to minimize costs. Additionally, it supports `multi-region` deployments and offers `DPI (Deep Packet Inspection) bypass` to ensure reliable VPN access in restrictive network environments.
 
 ## Table of Contents
-- [Setting Up AWS Free Tier](../docs/aws.md)
-- [Install OpenVPN Client (macOS & iOS)](../docs/client.md)
-
-
 - [Prerequisites](#prerequisites)
 - [Installing Dependencies](#installing-dependencies)
 - [How to Use the `vpn.py` Script](#how-to-use-the-vpnpy-script)
 - [Cloning the Repository](#cloning-the-repository)
 - [Additional Resources](#additional-resources)
+
+## Additional Docs
+- [Setting Up AWS Free Tier](../docs/aws.md)
+- [Install OpenVPN Client (macOS & iOS)](../docs/client.md)
 
 ## <a id="prerequisites">Prerequisites</a>
 
@@ -126,14 +126,7 @@ To clone the repository, follow these steps:
     git clone https://github.com/gkonovalov/free-vpn.git
     cd free-vpn
     ```
-
-## <a id="additional-resources">Additional Resources</a>
-
-For more information on using AWS services and VPN configurations, consider checking the following resources:
-- [AWS Documentation](https://docs.aws.amazon.com/) - Official documentation covering all AWS services, best practices, and guides.
-- [Terraform Documentation](https://www.terraform.io/docs/index.html) - Comprehensive resources and tutorials for using Terraform to manage infrastructure as code.
-- [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) - A guide to installing and configuring the AWS Command Line Interface for managing AWS services from your terminal.
-
+   
 
 ------------
 Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
