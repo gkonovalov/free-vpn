@@ -8,7 +8,7 @@ variable "aws_region" {
 variable "instance_name" {
   description = "The AWS instance name"
   type        = string
-  default     = "OpenVPN-Server"
+  default     = "open_vpn_server"
 }
 
 variable "server_ip" {
@@ -57,10 +57,4 @@ variable "instance_type" {
   description = "EC2 instance type"
   type        = string
   default     = "t3.micro"
-}
-
-variable "base_path" {
-  description = "The path to the directory containing scripts"
-  type        = string
-  default     = ".."
 }

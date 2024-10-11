@@ -14,14 +14,14 @@ ANSIBLE_MAIN = 'playbook.yml'
 
 REGION_TO_CITY = {
     # North America
-    "us-east-1": "N.Virginia",
+    "us-east-1": "N. Virginia",
     "us-east-2": "Ohio",
     "us-west-1": "N. California",
     "us-west-2": "Oregon",
     "ca-central-1": "Canada (Central)",
     "ca-west-1": "Canada West (Calgary)",
     # South America
-    "sa-east-1": "SaoPaulo",
+    "sa-east-1": "São Paulo",
     # Europe
     "eu-west-1": "Ireland",
     "eu-west-2": "London",
@@ -55,7 +55,7 @@ REGION_TO_CITY = {
 def main():
     print("Welcome to the Free VPN management tool!")
     print("You can choose one of the following actions:")
-    print("  'deploy'  : Set up a new VPN server or update an existing one")
+    print("  'deploy'  : Set up a new VPN server or update an existing one.")
     print("  'destroy' : Remove an existing VPN server.")
     print("  'list'    : View all active VPN servers.")
 
@@ -65,17 +65,19 @@ def main():
         print("Available AWS Regions:")
         region_selection(get_available_regions, deploy_vpn_resources)
     elif action == "destroy":
-        print("Existing VPN servers in AWS Regions:")
+        print("Existing VPN servers:")
         region_selection(get_existing_regions, destroy_vpn_resources)
     elif action == "list":
-        print("Existing VPN servers in AWS Regions:")
+        print("Existing VPN servers:")
         print_city_regions(get_existing_regions())
     else:
         print(f"Invalid action '{action}'")
 
 
 def deploy_vpn_resources(region):
-    print(f"Deploying VPN for region: {region}")
+    if region in get_existing_regions():
+        print(f"VPN server for the {region} region already exists!")
+        print("You will be updating the configuration for the existing server.")
 
     var_file = parameters_selection(region)
 
@@ -111,7 +113,7 @@ def ansible_configuration_update(region):
     ansible = os.path.join(ANSIBLE, ANSIBLE_MAIN)
     config = '@' + os.path.join(STATE, region, CONFIG_FILE)
 
-    subprocess.run(['ansible-playbook', ansible, '--extra-vars', config])
+    subprocess.run(['ansible-playbook', ansible, "-i 'servers_group',", '--extra-vars', config])
 
 
 def region_selection(get_regions, action):
