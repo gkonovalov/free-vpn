@@ -9,10 +9,6 @@ Free VPN - tool for simplifying VPN server setup and management on `AWS` using `
 - [Cloning the Repository](#cloning-the-repository)
 - [Additional Resources](#additional-resources)
 
-## Additional Docs
-- [Setting Up AWS Free Tier](../docs/aws.md)
-- [Install OpenVPN Client (macOS & iOS)](../docs/client.md)
-
 ## <a id="prerequisites">Prerequisites</a>
 
 To utilize this tool effectively, you will need the following:
@@ -126,7 +122,10 @@ To clone the repository, follow these steps:
     git clone https://github.com/gkonovalov/free-vpn.git
     cd free-vpn
     ```
-   
+
+## <a id="additional-resources">Additional Resources</a>
+- [Setting Up AWS Free Tier](../docs/aws.md)
+- [Install OpenVPN Client (macOS & iOS)](../docs/client.md)
 
 ------------
 Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
