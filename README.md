@@ -124,8 +124,8 @@ To clone the repository, follow these steps:
     ```
 
 ## <a id="additional-resources">Additional Resources</a>
-- [Setting Up AWS Free Tier](../docs/aws.md)
-- [Install OpenVPN Client (macOS & iOS)](../docs/client.md)
+- [Setting Up AWS Free Tier](https://github.com/gkonovalov/free-vpn/blob/main/docs/aws.md)
+- [Install OpenVPN Client (macOS & iOS)](https://github.com/gkonovalov/free-vpn/blob/main/docs/client.md)
 
 ------------
 Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
