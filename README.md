@@ -13,7 +13,7 @@ Free VPN - tool for simplifying VPN server setup and management on `AWS` using `
 
 To utilize this tool effectively, you will need the following:
 
-- **AWS Account**: An active AWS account with access to the [Free Tier](https://aws.amazon.com/free/).
+- **AWS Account**: An active AWS account with access to the [AWS Free Tier](https://github.com/gkonovalov/free-vpn/blob/main/docs/aws.md).
 - **Python (v. 3.x or higher)**.
 - **Terraform (v. 1.2 or higher)**.
 - **Ansible (v. 2.17 or higher)**.
