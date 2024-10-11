@@ -128,7 +128,7 @@ To clone the repository, follow these steps:
 
 ## <a id="setting-up-aws-free-tier">Setting Up AWS Free Tier</a>
 
-As a new AWS customer, you are automatically enrolled in the Free Tier, which includes 750 hours of t2.micro instance usage per month for the first 12 months.
+As a new AWS customer, you are automatically enrolled in the Free Tier, which includes 750 hours of t3.micro instance usage per month for the first 12 months.
 
 1. **Create an AWS Account**:
     - Go to the [AWS sign-up page](https://aws.amazon.com/free/).
@@ -138,7 +138,7 @@ As a new AWS customer, you are automatically enrolled in the Free Tier, which in
    
 2. **Select an Plan**:
     - Choose the AWS Free Tier, which allows new AWS customers to use certain services free for 12 months.
-    - Be aware of the limits (**750 hours** of **t2.micro** usage per month, 100 GB of outbound bandwidth, etc.).
+    - Be aware of the limits (**750 hours** of **t3.micro** usage per month, 100 GB of outbound bandwidth, etc.).
     - After **12 months**, you will be billed at standard rates if you exceed free tier usage.
    
 3. **Get Your AWS Access Key**:
