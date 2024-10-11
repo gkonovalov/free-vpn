@@ -3,13 +3,14 @@
 Free VPN - tool for simplifying VPN server setup and management on `AWS` using `Terraform`, `Ansible` and `AWS CLI`. It simplifies creating, listing, and destroying VPN servers, leveraging AWS Free Tier to minimize costs. Additionally, it supports `multi-region` deployments and offers `DPI (Deep Packet Inspection) bypass` to ensure reliable VPN access in restrictive network environments.
 
 ## Table of Contents
+- [Setting Up AWS Free Tier](../docs/aws.md)
+- [Install OpenVPN Client (macOS & iOS)](../docs/client.md)
+
 
 - [Prerequisites](#prerequisites)
 - [Installing Dependencies](#installing-dependencies)
 - [How to Use the `vpn.py` Script](#how-to-use-the-vpnpy-script)
 - [Cloning the Repository](#cloning-the-repository)
-- [Setting Up AWS Free Tier](#setting-up-aws-free-tier)
-- [Install OpenVPN Client (macOS & iOS)](#install-openvpn-client-macos-ios)
 - [Additional Resources](#additional-resources)
 
 ## <a id="prerequisites">Prerequisites</a>
@@ -125,71 +126,6 @@ To clone the repository, follow these steps:
     git clone https://github.com/gkonovalov/free-vpn.git
     cd free-vpn
     ```
-
-## <a id="setting-up-aws-free-tier">Setting Up AWS Free Tier</a>
-
-As a new AWS customer, you are automatically enrolled in the Free Tier, which includes 750 hours of t3.micro instance usage per month for the first 12 months.
-
-1. **Create an AWS Account**:
-    - Go to the [AWS sign-up page](https://aws.amazon.com/free/).
-    - Enter your email address and choose a password.
-    - Provide a phone number for verification.
-    - Follow the prompts to complete your registration.
-   
-2. **Select an Plan**:
-    - Choose the AWS Free Tier, which allows new AWS customers to use certain services free for 12 months.
-    - Be aware of the limits (**750 hours** of **t3.micro** usage per month, 100 GB of outbound bandwidth, etc.).
-    - After **12 months**, you will be billed at standard rates if you exceed free tier usage.
-   
-3. **Get Your AWS Access Key**:
-    - Log in to the **AWS Console**.
-    - Navigate to **IAM (Identity and Access Management)**:
-      - Click on **Users** → **Create User**.
-    - Enter a username (e.g., `vpnuser`), and check the box for **Attach policies directly**:
-      - Select the necessary policies (e.g., `AdministratorAccess` for EC2 management).
-    - Click on `vpnuser` in the user table → **Security Credentials**:
-      - Click on **Access Keys** → **Create access key**.
-    - Download the CSV file containing your **AWS Access Key ID** and **Secret Access Key**.
-
-
-## <a id="install-openvpn-client-macos-ios">Install OpenVPN Client (macOS & iOS)</a>
-
-### macOS Installation
-
-Tunnelblick is a free, open-source OpenVPN client for macOS that helps manage VPN connections.
-
-1. **Download Tunnelblick**  
-   Visit the [Tunnelblick website](https://tunnelblick.net/downloads.html) and download the latest stable version for macOS.
-
-2. **Install Tunnelblick**  
-   After the download completes, follow these steps to install:
-
-   - Open the `.dmg` file from your Downloads folder.
-   - Drag the Tunnelblick icon into the Applications folder.
-   - Open Tunnelblick from your Applications folder.
-   - You may be prompted to enter your macOS administrator password to complete the installation.
-
-3. **Configure Tunnelblick**:
-
-   - After installation, open Tunnelblick.
-   - If you have a `.ovpn` configuration file for your VPN, drag it onto the Tunnelblick icon in the menu bar or go to **File** > **Import VPN Configuration**.
-   - Click **Connect** to start your VPN connection.
-
-### iOS Installation
-
-Tunnelblick is not available for iOS, but you can use the official OpenVPN Connect app to connect to your VPN.
-
-1. **Download OpenVPN Connect**  
-   Open the App Store on your iOS device and search for **OpenVPN Connect**. Alternatively, you can download it from this [link](https://apps.apple.com/us/app/openvpn-connect/id590379981).
-
-2. **Install OpenVPN Connect**  
-   Tap **Get** and follow the prompts to install the app on your iOS device.
-
-3. **Import the VPN Configuration**:
-
-   - Once OpenVPN Connect is installed, you can import your `.ovpn` file by sending it to your iOS device via email, cloud storage, or AirDrop.
-   - Tap the file and select **Open in OpenVPN**.
-   - Follow the on-screen prompts to connect to your VPN.
 
 ## <a id="additional-resources">Additional Resources</a>
 
