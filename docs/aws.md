@@ -1,4 +1,4 @@
-## Setting Up AWS Free Tier
+## <a id="setting-up-aws-free-tier">Setting Up AWS Free Tier Account</a>
 
 As a new AWS customer, you are automatically enrolled in the Free Tier. For more information on using AWS services and VPN configurations, consider checking the following resources:
 
@@ -10,7 +10,7 @@ As a new AWS customer, you are automatically enrolled in the Free Tier. For more
     - **Lambda**: 1 million free requests per month and 400,000 GB-seconds of compute time per month.
   - For more details, visit the [AWS Free Tier page](https://aws.amazon.com/free/).
 
-## Create an AWS Account and AWS Access Key
+## <a id="create-aws-and-access-keys">Create an AWS Account and AWS Access Key</a>
 
 1. **Create an AWS Account**:
     - Go to the [AWS sign-up page](https://aws.amazon.com/free/).

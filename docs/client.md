@@ -1,6 +1,6 @@
 ## Install OpenVPN Client (macOS & iOS)
 
-### macOS Installation
+### <a id="mac-os-installation">macOS Installation</a>
 
 Tunnelblick is a free, open-source OpenVPN client for macOS that helps manage VPN connections.
 
@@ -21,7 +21,7 @@ Tunnelblick is a free, open-source OpenVPN client for macOS that helps manage VP
    - If you have a `.ovpn` configuration file for your VPN, drag it onto the Tunnelblick icon in the menu bar or go to **File** > **Import VPN Configuration**.
    - Click **Connect** to start your VPN connection.
 
-### iOS Installation
+### <a id="ios-installation">iOS Installation</a>
 
 Tunnelblick is not available for iOS, but you can use the official OpenVPN Connect app to connect to your VPN.
 

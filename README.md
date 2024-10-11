@@ -64,7 +64,7 @@ Follow these steps to set up the required dependencies for this tool:
 
    For additional information and installation methods on different platforms, refer to the [official AWS CLI installation guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-   After installation, configure the AWS CLI with your [access keys](https://github.com/gkonovalov/free-vpn/blob/main/docs/aws.md). You will be prompted to enter your `Access Key ID`, `Secret Access Key`, default region name, and output format:
+   After installation, configure the AWS CLI with your [access keys](https://github.com/gkonovalov/free-vpn/blob/main/docs/aws.md#create-aws-and-access-keys). You will be prompted to enter your `Access Key ID`, `Secret Access Key`, default region name, and output format:
 
     ```bash
     aws configure
