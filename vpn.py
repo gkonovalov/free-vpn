@@ -204,9 +204,9 @@ def print_city_regions(regions):
         city = REGION_TO_CITY.get(region)
 
         if city:
-            print(f"{city} -> {region}")
+            print(f"{region} - {city}")
         else:
-            print(f"City not found -> {region}")
+            print(f"{region} - City not found")
 
 
 def pinput(prompt, default=None):
