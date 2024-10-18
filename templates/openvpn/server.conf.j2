@@ -29,10 +29,10 @@
 # on the same machine, use a different port
 # number for each one.  You will need to
 # open up this port on your firewall.
-port {{ openvpn_port }}
+port {{ vpn_port }}
 
 # TCP or UDP server?
-proto {{ openvpn_protocol }}
+proto {{ vpn_protocol }}
 
 # "dev tun" will create a routed IP tunnel,
 # "dev tap" will create an ethernet tunnel.
@@ -242,7 +242,7 @@ keepalive 10 120
 # a copy of this key.
 # The second parameter should be '0'
 # on the server and '1' on the clients.
-{% if openvpn_dpi_bypass %}
+{% if vpn_dpi_bypass %}
 tls-crypt ta.key 0
 {% endif %}
 
