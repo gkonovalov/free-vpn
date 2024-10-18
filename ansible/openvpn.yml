@@ -1,10 +1,10 @@
 ---
-- name: Adding hosts dynamically...
+- name: Adding hosts dynamically
   hosts: localhost
   gather_facts: no
   check_mode: no
   tasks:
-    - name: Waiting for server to become available...
+    - name: Waiting for server to become available
       wait_for:
         host: "{{ server_ip }}"
         port: "{{ ssh_port }}"
@@ -12,44 +12,44 @@
         timeout: 600
         delay: 5
 
-    - name: Adding a new host...
+    - name: Adding a new host
       ansible.builtin.add_host:
         name: "{{ instance_name }}"
         ansible_user: "{{ ssh_username }}"
         ansible_host: "{{ server_ip }}"
-        ansible_ssh_private_key_file: "state/{{ aws_region }}/{{ ssh_key_name }}"
+        ansible_ssh_private_key_file: "servers/{{ aws_region }}/{{ ssh_key_name }}"
         ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
         ansible_python_interpreter: "/usr/bin/python3"
         groups: servers_group
 
-- name: Setting up OpenVPN server...
+- name: Setting up OpenVPN server
   hosts: servers_group
   become: yes
   gather_facts: no
   tasks:
-    - name: Updating system locale...
+    - name: Updating system locale
       command: localectl set-locale LANG=en_US.UTF-8
 
-    - name: Updating system packages...
+    - name: Updating system packages
       apt:
         update_cache: yes
         upgrade: dist
 
-    - name: Configuring iptables-persistent for IPv4...
+    - name: Configuring iptables-persistent for IPv4
       debconf:
         name: iptables-persistent
         question: iptables-persistent/autosave_v4
         value: true
         vtype: boolean
 
-    - name: Configuring iptables-persistent for IPv6...
+    - name: Configuring iptables-persistent for IPv6
       debconf:
         name: iptables-persistent
         question: iptables-persistent/autosave_v6
         value: true
         vtype: boolean
 
-    - name: Installing openvpn udev easy-rsa dnsmasq iptables-persistent packages...
+    - name: Installing openvpn udev easy-rsa dnsmasq iptables-persistent packages
       apt:
         name:
           - openvpn
@@ -59,117 +59,127 @@
           - iptables-persistent
         state: present
 
-    - name: Creating OpenVPN CA directory...
+    - name: Creating OpenVPN CA directory
       file:
         path: /home/{{ ansible_user }}/easy-rsa/
         state: directory
 
-    - name: Copying Easy-RSA files...
+    - name: Copying Easy-RSA files
       copy:
         src: /usr/share/easy-rsa/
         dest: /home/{{ ansible_user }}/easy-rsa/
         remote_src: yes
 
-    - name: Initializing PKI...
+    - name: Initializing PKI
       command: ./easyrsa init-pki
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
       environment:
         EASYRSA_BATCH: "yes"
 
-    - name: Building CA...
+    - name: Building CA
       command: ./easyrsa build-ca nopass
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
       environment:
         EASYRSA_BATCH: "yes"
 
-    - name: Generating server certificate...
+    - name: Generating server certificate
       command: ./easyrsa gen-req server nopass
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
       environment:
         EASYRSA_BATCH: "yes"
 
-    - name: Signing server certificate...
+    - name: Signing server certificate
       command: ./easyrsa sign-req server server
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
       environment:
         EASYRSA_BATCH: "yes"
 
-    - name: Generating Diffie-Hellman...
+    - name: Generating Diffie-Hellman
       command: ./easyrsa gen-dh
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
 
-    - name: Generating client certificate...
+    - name: Generating client certificate
       command: ./easyrsa gen-req client1 nopass
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
       environment:
         EASYRSA_BATCH: "yes"
 
-    - name: Signing client certificate...
+    - name: Signing client certificate
       command: ./easyrsa sign-req client client1
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
       environment:
         EASYRSA_BATCH: "yes"
 
-    - name: Moving certificates and keys to OpenVPN server directory...
+    - name: Moving certificates and keys to OpenVPN server directory
       command: cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem /etc/openvpn/
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
 
-    - name: Creating client certificates directory...
-      file:
-        path: /home/{{ ansible_user }}/client_certs
-        state: directory
-
-    - name: Generating TLS-Auth key...
+    - name: Generating TLS-Auth key
       command: openvpn --genkey secret /etc/openvpn/ta.key
-      when: openvpn_dpi_bypass
+      when: vpn_dpi_bypass
 
-    - name: Moving client certificates and keys to client directory...
-      command: cp pki/ca.crt pki/issued/client1.crt pki/private/client1.key ../client_certs
+    - name: Copy CA certificate
+      command: cat pki/ca.crt
+      register: ca_crt
       args:
         chdir: /home/{{ ansible_user }}/easy-rsa/
 
-    - name: Setting read permissions for client certs...
-      file:
-        path: /home/{{ ansible_user }}/client_certs/
-        mode: '0644'
+    - name: Copy Client certificate
+      command: cat pki/issued/client1.crt
+      register: client_crt
+      args:
+        chdir: /home/{{ ansible_user }}/easy-rsa/
 
-    - name: Removing OpenVPN CA and PKI directories...
+    - name: Copy Client key
+      command: cat pki/private/client1.key
+      register: client_key
+      args:
+        chdir: /home/{{ ansible_user }}/easy-rsa/
+
+    - name: Copy TLS-Auth key
+      command: cat /etc/openvpn/ta.key
+      register: tls_crypt
+      when: vpn_dpi_bypass
+      args:
+        chdir: /home/{{ ansible_user }}/easy-rsa/
+
+    - name: Removing OpenVPN CA and PKI directories
       file:
         path: /home/{{ ansible_user }}/easy-rsa/
         state: absent
 
-    - name: Copying OpenVPN server config to /etc/openvpn/...
+    - name: Copying OpenVPN server config to /etc/openvpn/
       template:
-        src: ../templates/server.conf.j2
+        src: ../templates/openvpn/server.conf.j2
         dest: /etc/openvpn/server.conf
 
-    - name: Enabling IP forwarding...
+    - name: Enabling IP forwarding
       lineinfile:
         path: /etc/sysctl.conf
         line: "net.ipv4.ip_forward = 1"
 
-    - name: Applying sysctl settings...
+    - name: Applying sysctl settings
       command: sysctl -p
 
-    - name: Configuring firewall rules...
+    - name: Configuring firewall rules
       block:
         - command: iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o ens5 -j MASQUERADE
         - command: iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
         - command: iptables -A FORWARD -s 10.8.0.0/24 -j ACCEPT
         - command: iptables -A FORWARD -j REJECT
 
-    - name: Saving iptables rules...
+    - name: Saving iptables rules
       command: netfilter-persistent save
 
-    - name: Adding DNS server configuration for DnsMasq...
+    - name: Adding DNS server configuration for DnsMasq
       lineinfile:
         path: /etc/dnsmasq.conf
         line: "{{ item }}"
@@ -178,48 +188,21 @@
         - "listen-address=127.0.0.1,10.8.0.1"
         - "interface=tun0"
 
-    - name: Creating a OpenVPN client directory on local machine...
-      file:
-        path: ../state/{{ aws_region }}/openvpn/
-        state: directory
-      become: no
-      delegate_to: localhost
-
-    - name: Copying OpenVPN client configuration to local machine...
+    - name: Copying OpenVPN client configuration file
       template:
-        src: ../templates/client.ovpn.j2
-        dest: ../state/{{ aws_region }}/openvpn/client.ovpn
+        src: ../templates/openvpn/client.ovpn.j2
+        dest: ../servers/{{ aws_region }}/openvpn_client.ovpn
       become: no
       delegate_to: localhost
 
-    - name: Downloading client certificates and key...
-      fetch:
-        src: "/home/{{ ansible_user }}/client_certs/{{ item }}"
-        dest: ../state/{{ aws_region }}/openvpn/
-        flat: yes
-      loop:
-        - ca.crt
-        - client1.crt
-        - client1.key
-
-    - name: Downloading TLS-Auth key...
-      fetch:
-        src: /etc/openvpn/ta.key
-        dest: ../state/{{ aws_region }}/openvpn/
-        flat: yes
-      when: openvpn_dpi_bypass
-
-    - name: Removing server folder for client certificates...
-      file:
-        path: /home/{{ ansible_user }}/client_certs/
-        state: absent
-
-    - name: Restarting OpenVPN service...
+    - name: Restarting OpenVPN service
       systemd:
         name: openvpn@server
         state: restarted
+        enabled: yes
 
-    - name: Restarting DnsMasq service...
+    - name: Restarting DnsMasq service
       systemd:
         name: dnsmasq
         state: restarted
+        enabled: yes
