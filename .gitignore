@@ -41,7 +41,7 @@ terraform.rc
 /terraform/.terraform.tfstate.lock.info
 /terraform/.terraform.lock.hcl
 /terraform/.terraform
-/state/
+/servers/
 /.idea/*
 /out/*
 *.iml
