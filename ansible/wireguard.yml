@@ -1,0 +1,129 @@
+---
+- name: Adding hosts dynamically
+  hosts: localhost
+  gather_facts: no
+  check_mode: no
+  tasks:
+    - name: Waiting for server to become available
+      wait_for:
+        host: "{{ server_ip }}"
+        port: "{{ ssh_port }}"
+        state: started
+        timeout: 600
+        delay: 5
+
+    - name: Adding a new host
+      ansible.builtin.add_host:
+        name: "{{ instance_name }}"
+        ansible_user: "{{ ssh_username }}"
+        ansible_host: "{{ server_ip }}"
+        ansible_ssh_private_key_file: "servers/{{ aws_region }}/{{ ssh_key_name }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
+        ansible_python_interpreter: "/usr/bin/python3"
+        groups: servers_group
+
+- name: Setting up WireGuard server
+  hosts: servers_group
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Updating system locale
+      command: localectl set-locale LANG=en_US.UTF-8
+
+    - name: Updating system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Configuring iptables-persistent for IPv4
+      debconf:
+        name: iptables-persistent
+        question: iptables-persistent/autosave_v4
+        value: true
+        vtype: boolean
+
+    - name: Configuring iptables-persistent for IPv6
+      debconf:
+        name: iptables-persistent
+        question: iptables-persistent/autosave_v6
+        value: true
+        vtype: boolean
+
+    - name: Installing wireguard dnsmasq iptables-persistent packages
+      apt:
+        name:
+          - wireguard
+          - dnsmasq
+          - resolvconf
+          - iptables-persistent
+        state: present
+
+    - name: Generate Server private key
+      command: wg genkey
+      register: server_private_key
+
+    - name: Generate Server public key
+      shell: "echo '{{ server_private_key.stdout }}' | wg pubkey"
+      register: server_public_key
+      changed_when: false
+
+    - name: Generate Client private key
+      command: wg genkey
+      register: client_private_key
+
+    - name: Generate Client public key
+      shell: "echo '{{ client_private_key.stdout }}' | wg pubkey"
+      register: client_public_key
+      changed_when: false
+
+    - name: Copying WireGuard server config to /etc/wireguard/
+      template:
+        src: ../templates/wireguard/server.conf.j2
+        dest: /etc/wireguard/wg0.conf
+
+    - name: Enabling IP forwarding
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: "net.ipv4.ip_forward = 1"
+
+    - name: Applying sysctl settings
+      command: sysctl -p
+
+    - name: Configuring firewall rules
+      block:
+        - command: iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o ens5 -j MASQUERADE
+        - command: iptables -I INPUT 1 -i wg0 -j ACCEPT
+        - command: iptables -I FORWARD 1 -i ens5 -o wg0 -j ACCEPT
+        - command: iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+        - command: iptables -I INPUT 1 -i ens5 -p udp --dport {{ vpn_port }} -j ACCEPT
+
+    - name: Saving iptables rules
+      command: netfilter-persistent save
+
+    - name: Adding DNS server configuration for DnsMasq
+      lineinfile:
+        path: /etc/dnsmasq.conf
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "listen-address=127.0.0.1,10.8.0.1"
+        - "interface=tun0"
+
+    - name: Copying WireGuard client configuration file
+      template:
+        src: ../templates/wireguard/client.conf.j2
+        dest: ../servers/{{ aws_region }}/wireguard_client.conf
+      become: no
+      delegate_to: localhost
+
+    - name: Starting WireGuard
+      systemd:
+        name: wg-quick@wg0
+        state: restarted
+        enabled: yes
+
+    - name: Restarting DnsMasq service
+      systemd:
+        name: dnsmasq
+        state: restarted
+        enabled: yes
