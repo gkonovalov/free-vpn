@@ -1,6 +1,6 @@
 # Save the private key locally
 resource "local_file" "private_key" {
-  content  = tls_private_key.open_vpn_server_key.private_key_pem
+  content  = tls_private_key.vpn_server_key.private_key_pem
   filename = local.ssh_key_path
 
   provisioner "local-exec" {

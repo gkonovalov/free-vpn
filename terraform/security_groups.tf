@@ -1,12 +1,12 @@
 # Configure AWS security group
-resource "aws_security_group" "openvpn_sg" {
-  name        = "openvpn_sg"
-  description = "Security group for OpenVPN"
+resource "aws_security_group" "vpn_sg" {
+  name        = "vpn_sg"
+  description = "Security group for VPN"
 
   ingress {
-    from_port   = var.openvpn_port
-    to_port     = var.openvpn_port
-    protocol    = var.openvpn_protocol
+    from_port   = var.vpn_port
+    to_port     = var.vpn_port
+    protocol    = var.vpn_protocol
     cidr_blocks = ["0.0.0.0/0"]
   }
 

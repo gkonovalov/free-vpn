@@ -8,7 +8,7 @@ variable "aws_region" {
 variable "instance_name" {
   description = "The AWS instance name"
   type        = string
-  default     = "open_vpn_server"
+  default     = "vpn_server"
 }
 
 variable "server_ip" {
@@ -35,20 +35,20 @@ variable "ssh_key_name" {
   default     = "ssh_key.pem"
 }
 
-variable "openvpn_dpi_bypass" {
-  description = "DPI bypass for OpenVPN (default # - disabled)"
+variable "vpn_dpi_bypass" {
+  description = "DPI bypass for VPN (default # - disabled)"
   type        = bool
   default     = true
 }
 
-variable "openvpn_port" {
-  description = "Port for OpenVPN (default 1194)"
+variable "vpn_port" {
+  description = "Port for VPN (default 1194)"
   type        = number
   default     = 1194
 }
 
-variable "openvpn_protocol" {
-  description = "Protocol for OpenVPN (default udp)"
+variable "vpn_protocol" {
+  description = "Protocol for VPN (default udp)"
   type        = string
   default     = "udp"
 }
