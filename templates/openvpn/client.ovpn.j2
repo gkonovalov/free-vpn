@@ -33,12 +33,12 @@ dev tun
 # Are we connecting to a TCP or
 # UDP server?  Use the same setting as
 # on the server.
-proto {{ openvpn_protocol }}
+proto {{ vpn_protocol }}
 
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-remote {{ server_ip }} {{ openvpn_port }}
+remote {{ server_ip }} {{ vpn_port }}
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -83,9 +83,17 @@ persist-tun
 # a separate .crt/.key file pair
 # for each client.  A single ca
 # file can be used for all clients.
-ca ca.crt
-cert client1.crt
-key client1.key
+<ca>
+{{ ca_crt.stdout }}
+</ca>
+
+<cert>
+{{ client_crt.stdout }}
+</cert>
+
+<key>
+{{ client_key.stdout }}
+</key>
 
 # Verify server certificate by checking that the
 # certicate has the correct key usage set.
@@ -103,8 +111,10 @@ remote-cert-tls server
 
 # If a tls-auth key is used on the server
 # then every client must also have the key.
-{% if openvpn_dpi_bypass %}
-tls-crypt ta.key 1
+{% if vpn_dpi_bypass %}
+<tls-crypt>
+{{ tls_crypt.stdout }}
+</tls-crypt>
 {% endif %}
 
 # Select a cryptographic cipher.
