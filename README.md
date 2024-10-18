@@ -82,7 +82,7 @@ To create a new VPN server, run the Python script:
 
     When you run `vpn.py`, you will be prompted to choose one of the following actions:
 
-    - `create`: Set up a new VPN server or update an existing one.
+    - `create`: Set up a new VPN server.
     - `destroy`: Remove an existing VPN server.
     - `list`: View all active VPN servers.
 

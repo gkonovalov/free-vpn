@@ -56,7 +56,7 @@ REGION_TO_CITY = {
 def main():
     print("Welcome to the Free VPN management tool!")
     print("You can choose one of the following actions:")
-    print("  'deploy'  : Set up a new VPN server or update an existing one.")
+    print("  'deploy'  : Set up a new VPN server.")
     print("  'destroy' : Remove an existing VPN server.")
     print("  'list'    : View all active VPN servers.")
 
