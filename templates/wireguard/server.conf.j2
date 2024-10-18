@@ -1,0 +1,10 @@
+[Interface]
+Address = 10.8.0.1/32
+DNS = 10.8.0.1
+ListenPort = {{ vpn_port }}
+PrivateKey = {{ server_private_key.stdout }}
+SaveConfig = true
+
+[Peer]
+PublicKey = {{ client_public_key.stdout }}
+AllowedIPs = 10.8.0.2/32
