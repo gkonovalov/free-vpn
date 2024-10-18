@@ -92,22 +92,25 @@ To create a new VPN server, run the Python script:
     To customize your VPN server setup, you can modify the following configuration parameters in the `vpn.py` script:
 
     - `aws_region`: Specify the AWS region where the VPN server will be deployed (e.g., `us-east-1`).
-    - `instance_name`: Set a unique name for your VPN instance (e.g., `open-vpn-server`).
+    - `instance_name`: Set a unique name for your VPN instance (e.g., `vpn-server`).
     - `instance_type`: Choose the type of AWS instance (e.g., `t3.micro`).
-    - `openvpn_port`: Set the port number for OpenVPN (default is usually `1194`).
-    - `openvpn_protocol`: Specify the protocol used by OpenVPN (e.g., `udp` or `tcp`).
-    - `openvpn_dpi_bypass`: Configure DPI bypass for OpenVPN by setting this parameter to `yes` for enabled or `no` for disabled.
+    - `vpn_server_type`: Specify type of VPN Server (e.g., `wireguard`, or `openvpn`).
+    - `vpn_dpi_bypass`: Configure DPI bypass (only for OpenVPN) by setting this parameter to `yes` for enabled or `no` for disabled.
+    - `vpn_port`: Set the port number for VPN (e.g. `1194`).
+    - `vpn_protocol`: Specify the protocol used by VPN (e.g., `udp` or `tcp`).
 
 
-3. **Obtain OpenVPN client configuration**:
+3. **Obtain VPN client configuration**:
 
-    After running the `vpn.py` script, the following OpenVPN client configuration and certificates will be available in the local region-specific directory (e.g., `state/us-east-1/openvpn`):
+    After running the `vpn.py` script, the following VPN client configuration and certificates will be available in the local region-specific directory (e.g., `servers/us-east-1/`):
 
-    - `ca.crt`: Certificate authority file.
-    - `client.ovpn`: OpenVPN configuration file.
-    - `client1.crt`: Client certificate file.
-    - `client1.key`: Client private key file.
-    - `ta.key`: TLS authentication key.
+    - `wireguard.conf`: Configuration file with keys for WireGuard.
+    - `openvpn.ovpn`:  Configuration file with keys for OpenVPN.
+
+
+4. **Download VPN client**:
+
+    After obtaining your configuration file, you need to download the VPN client software. You can find instructions for installing the VPN client on [macOS and iOS here](https://github.com/gkonovalov/free-vpn/blob/main/docs/client.md).
 
 
 ## <a id="cloning-the-repository">Cloning the Repository</a>
@@ -125,7 +128,7 @@ To clone the repository, follow these steps:
 
 ## <a id="additional-resources">Additional Resources</a>
 - [Setting Up AWS Free Tier](https://github.com/gkonovalov/free-vpn/blob/main/docs/aws.md)
-- [Install OpenVPN Client (macOS & iOS)](https://github.com/gkonovalov/free-vpn/blob/main/docs/client.md)
+- [Install VPN Client (macOS & iOS)](https://github.com/gkonovalov/free-vpn/blob/main/docs/client.md)
 
 ------------
 Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
