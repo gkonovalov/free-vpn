@@ -1,17 +1,18 @@
-import json
 import os
+import json
+import shutil
 import subprocess
 
 from builtins import input
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-TERRAFORM = os.path.join(ROOT, 'terraform')
-ANSIBLE = os.path.join(ROOT, 'ansible')
-SERVERS = os.path.join(ROOT, 'servers')
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+TERRAFORM_DIR = os.path.join(ROOT_DIR, 'terraform')
+ANSIBLE_DIR = os.path.join(ROOT_DIR, 'ansible')
+SERVERS_DIR = os.path.join(ROOT_DIR, 'servers')
 
 CONFIG_FILE = 'config.json'
-OPEN_VPN = 'openvpn.yml'
-WIREGUARD = 'wireguard.yml'
+OPEN_VPN_FILE = 'openvpn.yml'
+WIREGUARD_FILE = 'wireguard.yml'
 
 REGION_TO_CITY = {
     # North America
@@ -81,67 +82,86 @@ def deploy_vpn_resources(region):
         print("You will need to destroy the server before applying any changes!")
         return
 
-    var_file, vpn_server_type = parameters_selection(region)
+    var_file, vpn_server = vpn_parameters_selection(region)
 
-    subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'workspace', 'select', '-or-create', region])
-    subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'init', '-var-file=' + var_file])
-    subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'plan', '-var-file=' + var_file])
-    run_result = subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'apply', '-var-file=' + var_file, '-auto-approve'])
+    subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'workspace', 'select', '-or-create', region])
+    subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'init', '-var-file=' + var_file])
+    subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'plan', '-var-file=' + var_file])
+    result = subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'apply', '-var-file=' + var_file, '-auto-approve'])
 
-    if run_result.returncode == 0:
-        ansible_configuration_update(region, vpn_server_type)
+    if result.returncode == 0:
+        ansible_configuration_update(region, vpn_server)
 
 
 def destroy_vpn_resources(region):
     print(f"Destroying VPN server in region:'{region}'")
 
-    var_file = os.path.join(SERVERS, region, CONFIG_FILE)
+    var_file = os.path.join(SERVERS_DIR, region, CONFIG_FILE)
 
-    subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'workspace', 'select', region])
-    run_result = subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'destroy', '-var-file=' + var_file, '-auto-approve'])
+    subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'workspace', 'select', region])
+    result = subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'destroy', '-var-file=' + var_file, '-auto-approve'])
 
-    if run_result.returncode == 0:
-        print(f"Deleting config files: {region}")
-        delete_file(var_file)
-        delete_folder(os.path.join(SERVERS, region))
-
-        print(f"Deleting workspace: {region}")
-        subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'workspace', 'select', 'default'])
-        subprocess.run(['terraform', '-chdir=' + TERRAFORM, 'workspace', 'delete', region])
+    if result.returncode == 0:
+        cleanup_after_server_destruction(region, var_file)
 
 
-def ansible_configuration_update(region, vpn_server_type):
+def ansible_configuration_update(region, vpn_server):
     print("Configuring VPN server...")
-    ansible = os.path.join(ANSIBLE, vpn_server_type)
-    config = '@' + os.path.join(SERVERS, region, CONFIG_FILE)
+
+    ansible = os.path.join(ANSIBLE_DIR, vpn_server)
+    config = '@' + os.path.join(SERVERS_DIR, region, CONFIG_FILE)
 
     subprocess.run(['ansible-playbook', ansible, "-i 'servers_group',", '--extra-vars', config])
+
+
+def cleanup_after_server_destruction(region, var_file):
+    print(f"Deleting config files: {region}")
+
+    delete_file(var_file)
+    delete_folder(os.path.join(SERVERS_DIR, region))
+
+    print(f"Deleting workspace: {region}")
+
+    subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'workspace', 'select', 'default'])
+    subprocess.run(['terraform', '-chdir=' + TERRAFORM_DIR, 'workspace', 'delete', region])
+
+
+def pinput(prompt, default=None, options=[]):
+    if default:
+        parameter = input(f"{prompt} (default is '{default}'): ").lower() or default
+    else:
+        parameter = input(f"{prompt}: ")
+
+    if options and parameter not in options:
+        print("Invalid parameter, try again!")
+        return pinput(prompt, default, options)
+
+    return parameter
 
 
 def region_selection(get_regions, action):
     regions = get_regions()
 
     if not regions:
-        print("AWS regions is not available!")
+        print("AWS regions are not available!")
         return
 
     print_city_regions(regions)
-
     action(pinput("Enter region name", "us-east-1", regions))
 
 
-def parameters_selection(region):
+def vpn_parameters_selection(region):
     instance_name = pinput("Enter instance name", "vpn-server")
     instance_type = pinput("Enter instance type", "t3.micro")
-    vpn_server_type = pinput("Enter VPN Server type (wireguard|openvpn)", "wireguard", ["wireguard", "openvpn"])
+    vpn_server = pinput("Enter VPN Server type (wireguard|openvpn)", "wireguard", ["wireguard", "openvpn"])
     vpn_dpi_bypass = False
 
-    if vpn_server_type == "wireguard":
+    if vpn_server == "wireguard":
         vpn_port = pinput("Enter VPN port", "1194")
         vpn_protocol = 'udp'
-        vpn_server_type = WIREGUARD
+        vpn_server = WIREGUARD_FILE
     else:
-        vpn_server_type = OPEN_VPN
+        vpn_server = OPEN_VPN_FILE
         vpn_dpi_bypass = pinput("Use VPN DPI bypass (yes|no)", "yes", ["yes", "no"]) == "yes"
 
         if vpn_dpi_bypass:
@@ -160,11 +180,11 @@ def parameters_selection(region):
         "vpn_dpi_bypass": vpn_dpi_bypass
     }
 
-    return save_config_file(region, settings), vpn_server_type
+    return save_config_file(region, settings), vpn_server
 
 
 def get_existing_regions():
-    return list(set(get_existing_workspaces()) & set(get_files_list(SERVERS)))
+    return list(set(get_existing_workspaces()) & set(get_file_list(SERVERS_DIR)))
 
 
 def get_available_regions():
@@ -182,48 +202,30 @@ def get_available_regions():
 
 def get_existing_workspaces():
     run_result = subprocess.run(
-        ['terraform', '-chdir=' + TERRAFORM, 'workspace', 'list'],
+        ['terraform', '-chdir=' + TERRAFORM_DIR, 'workspace', 'list'],
         capture_output=True, text=True
     )
 
-    workspaces = []
-    for line in run_result.stdout.splitlines():
-        workspace = line.strip().lstrip('* ').strip()
-        if workspace and 'default' not in workspace:
-            workspaces.append(workspace)
-
-    return workspaces
+    return [line.strip().lstrip('* ').strip() for line in run_result.stdout.splitlines() if line.strip() and 'default' not in line]
 
 
 def print_city_regions(regions):
-    sorted_regions = sorted(regions)
-
-    for region in sorted_regions:
-        city = REGION_TO_CITY.get(region)
-
-        if city:
-            print(f"{region} - {city}")
-        else:
-            print(f"{region} - City not found")
+    for region in sorted(regions):
+        city = REGION_TO_CITY.get(region, "City not found")
+        print(f"{region} - {city}")
 
 
-def pinput(prompt, default=None, options=[]):
-    if default:
-        parameter = input(f"{prompt} (default is '{default}'): ").lower() or default
-    else:
-        parameter = input(f"{prompt}: ")
+def read_config_file(region):
+    var_file = os.path.join(SERVERS_DIR, region, CONFIG_FILE)
 
-    if options and parameter not in options:
-        print("Invalid parameter, try again!")
-        return pinput(prompt, default, options)
-
-    return parameter
+    if os.path.isfile(var_file):
+        with open(var_file, 'r') as file:
+            return json.load(file)
 
 
 def save_config_file(region, data):
-    var_file = os.path.join(SERVERS, region, CONFIG_FILE)
-
-    create_folder(os.path.join(SERVERS, region))
+    var_file = os.path.join(SERVERS_DIR, region, CONFIG_FILE)
+    create_folder(os.path.join(SERVERS_DIR, region))
 
     with open(var_file, 'w') as file:
         json.dump(data, file, indent=4)
@@ -231,19 +233,8 @@ def save_config_file(region, data):
     return var_file
 
 
-def get_files_list(path):
-    if os.path.isdir(path):
-        return os.listdir(SERVERS)
-
-    return []
-
-
-def read_config_file(region):
-    var_file = os.path.join(SERVERS, region, CONFIG_FILE)
-
-    if os.path.isfile(var_file):
-        with open(var_file, 'r') as file:
-            return json.load(file)
+def get_file_list(path):
+    return os.listdir(path) if os.path.isdir(path) else []
 
 
 def create_folder(path):
@@ -258,7 +249,7 @@ def delete_file(path):
 
 def delete_folder(path):
     if os.path.isdir(path):
-        subprocess.run(['rm', '-rf', path])
+        shutil.rmtree(path)
 
 
 if __name__ == "__main__":
