@@ -104,8 +104,8 @@ To create a new VPN server, run the Python script:
 
     After running the `vpn.py` script, the following VPN client configuration and certificates will be available in the local region-specific directory (e.g., `servers/us-east-1/`):
 
-    - `wireguard.conf`: Configuration file with keys for WireGuard.
-    - `openvpn.ovpn`:  Configuration file with keys for OpenVPN.
+    - `wireguard_client.conf`: Configuration file with keys for WireGuard.
+    - `openvpn_client.ovpn`:  Configuration file with keys for OpenVPN.
 
 
 4. **Download VPN client**:
