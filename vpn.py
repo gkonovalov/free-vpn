@@ -130,7 +130,7 @@ def pinput(prompt, default=None, options=[]):
     if default:
         parameter = input(f"{prompt} (default is '{default}'): ").lower() or default
     else:
-        parameter = input(f"{prompt}: ")
+        parameter = input(f"{prompt}: ").lower()
 
     if options and parameter not in options:
         print("Invalid parameter, try again!")
