@@ -37,4 +37,4 @@ As a new AWS customer, you are automatically enrolled in the Free Tier. For more
 
 
 ------------
-Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
+Georgiy Konovalov 2025 (c) [MIT License](https://opensource.org/licenses/MIT)

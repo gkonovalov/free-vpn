@@ -77,4 +77,4 @@ Tunnelblick is not available for iOS, but you can use the official OpenVPN Conne
    - Follow the on-screen prompts to connect to your VPN.
 
 ---
-Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
+Georgiy Konovalov 2025 (c) [MIT License](https://opensource.org/licenses/MIT)
