@@ -131,4 +131,4 @@ To clone the repository, follow these steps:
 - [Install VPN Client (macOS & iOS)](https://github.com/gkonovalov/free-vpn/blob/main/docs/client.md)
 
 ------------
-Georgiy Konovalov 2024 (c) [MIT License](https://opensource.org/licenses/MIT)
+Georgiy Konovalov 2025 (c) [MIT License](https://opensource.org/licenses/MIT)
