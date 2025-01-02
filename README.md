@@ -77,7 +77,7 @@ To create a new VPN server, run the Python script:
 1. **Run the Python Script**:
 
     ```bash
-    python vpn.py
+    python3 vpn.py
     ```
 
     When you run `vpn.py`, you will be prompted to choose one of the following actions:
